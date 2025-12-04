@@ -14,6 +14,7 @@ import FreePlayExplorer from './components/FreePlayExplorer';
 import PolicySimulator from './components/PolicySimulator';
 import { motion } from 'framer-motion';
 import { AlertCircle, Anchor, Navigation, Zap } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 const Section: React.FC<{ children: React.ReactNode; title?: string; subtitle?: string; bg?: string; id?: string }> = ({ children, title, subtitle, bg = "bg-transparent", id }) => (
   <motion.div 
@@ -209,6 +210,7 @@ const App: React.FC = () => {
           <p>內容僅供教育與研究用途。All data derived from CSIS open-source wargame report.</p>
         </div>
       </Section>
+      <Analytics />
     </div>
   );
 };
