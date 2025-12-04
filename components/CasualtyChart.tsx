@@ -5,8 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 const data = [
   { name: '1x1 (海警)', coalition: 0, china: 0, merchants: 448, label: '無傷亡' },
   { name: '2x2 (潛艇)', coalition: 2256, china: 208, merchants: 354, label: '台灣重創' },
-  { name: '3x3 (護航)', coalition: 6237, china: 3147, merchants: 106, label: '血腥護航' },
-  { name: '4x4 (全面)', coalition: 26981, china: 13675, merchants: 49, label: '災難性' },
+  { name: '3x3 (護航)', coalition: 4129, china: 3147, merchants: 106, label: '血腥護航' },
+  { name: '4x4 (全面)', coalition: 23689, china: 13675, merchants: 49, label: '災難性' },
 ];
 
 const CasualtyChart: React.FC = () => {

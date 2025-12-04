@@ -163,6 +163,38 @@ export const getScenarioData = (china: ChinaEscalation, coalition: CoalitionEsca
       tacticalInsight: "即便物資運抵，台灣的能源基礎設施（電廠、變電所）因遭導彈攻擊而癱瘓，是此情境的最大弱點。"
     };
   }
+  // Table 5.15 (China Offshore Kinetic vs US Wider War)
+  else if (china === 3 && coalition === 4) {
+    result = {
+      id: "3x4",
+      name: "不對稱打擊",
+      engName: "3x4: Asymmetric Strike",
+      description: "中國僅限境外海戰，但美軍對中國本土沿海目標（機場、港口）發動全面攻擊。",
+      electricity: 100, // End of Game
+      imports: 100, // End of Game
+      casualties_coalition: 5355, // US 4295 + TW 1060
+      casualties_china: 7091,
+      merchantLosses: 47,
+      summary: "中國海軍在五週內被全殲。美軍利用遠程火力摧毀中國沿海空軍基地。對中國而言，這是軍事與外交的雙重災難。",
+      tacticalInsight: "此情境顯示，若中國不敢攻擊美軍日本基地，將處於極度劣勢。這會迫使中國選擇失敗或升級（攻擊日本）。"
+    };
+  }
+  // Table 5.17 (China Wider War vs US Constrained)
+  else if (china === 4 && coalition === 3) {
+    result = {
+      id: "4x3",
+      name: "被動挨打",
+      engName: "4x3: US Constrained",
+      description: "中國攻擊美軍基地與台灣電網，但美軍受限不攻擊中國本土。",
+      electricity: 0, // Worst Week & End of Game
+      imports: 0, // Worst Week
+      casualties_coalition: 30589, // US 18785 + TW 7666 + JP 4138
+      casualties_china: 4284,
+      merchantLosses: 80,
+      summary: "美軍損失慘重（含2艘航母），且因不攻擊中國本土而無法有效壓制共軍。台灣電網全毀，電力歸零。",
+      tacticalInsight: "這是對美軍最不利的情境。限制攻擊中國本土（如機場）讓共軍能集結兵力發動飽和攻擊，導致美軍傷亡最大化。"
+    };
+  }
   // Table 5.16
   else if (china === 4 && coalition === 2) {
      result = {
@@ -259,6 +291,13 @@ export const timelineEvents: TimelineEvent[] = [
     description: "北京通過法律，授權在「和平統一的可能性完全喪失」時使用非和平手段。",
     insight: "這為封鎖提供了國內法基礎，將其定性為「內政」而非國際戰爭。",
     iconType: "political"
+  },
+  {
+    year: "2021",
+    title: "戴維森窗口 (Davidson Window)",
+    description: "前印太司令戴維森警告，中國可能在2027年前具備攻台能力。",
+    insight: "這引發了美國軍方對「2027年」時間表的焦慮，儘管習近平否認有具體攻台計畫。",
+    iconType: "military"
   },
   {
     year: "2022",

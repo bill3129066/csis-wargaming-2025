@@ -81,7 +81,7 @@ const ZeroBaselineComparison: React.FC = () => {
           <div className="text-2xl font-bold mb-1 text-green-600">{currentData.green}%</div>
           <div className="flex items-start text-xs text-green-800/70">
             <AlertCircle size={12} className="mr-1 mt-0.5 flex-shrink-0" />
-            <span>廢核 + 依賴天然氣導致韌性大幅下降。第 3 週即崩潰。</span>
+            <span>廢核+依賴天然氣。第3週即跌至嚴重水準(18%)，第7週進入危機。</span>
           </div>
         </div>
       </div>

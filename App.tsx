@@ -129,9 +129,10 @@ const App: React.FC = () => {
       <Section title="核心弱點：能源生命線" bg="bg-white">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-1">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">為什麼 LNG 是致命傷？</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">零基線測試：如果完全斷供？</h3>
               <p className="mb-6 text-gray-700 leading-relaxed">
-                台灣97%的能源依賴進口。在完全封鎖的情境下，<b>液化天然氣 (LNG)</b> 是最脆弱的一環。
+                CSIS 設定了「零基線」(Zero Baseline) 情境：假設封鎖完全成功，沒有任何物資進入。
+                在此極端壓力測試下，<b>液化天然氣 (LNG)</b> 是最致命的弱點。
                 即便在平時，台灣的 LNG 庫存也僅有約 11-12 天。
               </p>
               <ul className="space-y-4 mb-6">
@@ -189,9 +190,14 @@ const App: React.FC = () => {
               台灣與美國的目標不在於贏得封鎖戰，而在於透過展示<b>「我們能撐得比你想像更久」</b>的能力，
               提高北京的決策成本，從而達到嚇阻的效果。
             </p>
-            <div className="inline-block px-6 py-3 border border-stone-600 rounded-full text-sm text-stone-400 hover:bg-stone-800 transition-colors cursor-pointer">
+            <a
+              href="https://www.csis.org/analysis/lights-out-wargaming-chinese-blockade-taiwan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 border border-stone-600 rounded-full text-sm text-stone-400 hover:bg-stone-800 transition-colors cursor-pointer"
+            >
               閱讀完整報告 (CSIS.org)
-            </div>
+            </a>
           </div>
           
           {/* Decorative background elements */}
