@@ -1,214 +1,338 @@
-
 import { ChinaEscalation, CoalitionEscalation, ScenarioResult, EnergyDataPoint, ImpactCategory, MapFeature, TimelineEvent, AirliftData, GdpComparisonData, PolicyOption, FreePlayGame, SimulationModule } from './types';
 
 // Escalation Matrix Descriptions
-export const chinaLevels = [
+export const chinaLevels_ZH = [
   { id: ChinaEscalation.Boarding, label: '登船檢查 (1)', desc: '海警與民兵強制登船 (Boarding)' },
   { id: ChinaEscalation.SubsMines, label: '潛艇與水雷 (2)', desc: '使用潛艇與水雷封鎖 (Subs & Mines)' },
   { id: ChinaEscalation.OffshoreKinetic, label: '境外打擊 (3)', desc: '攻擊排他區內商船/護航艦 (Offshore Kinetic)' },
   { id: ChinaEscalation.WiderWar, label: '全面戰爭 (4)', desc: '打擊台灣本島與美日基地 (Wider War)' },
 ];
 
-export const coalitionLevels = [
+export const chinaLevels_EN = [
+  { id: ChinaEscalation.Boarding, label: 'Boarding (1)', desc: 'Coast Guard & Militia forced boarding' },
+  { id: ChinaEscalation.SubsMines, label: 'Subs & Mines (2)', desc: 'Blockade using submarines & mines' },
+  { id: ChinaEscalation.OffshoreKinetic, label: 'Offshore Kinetic (3)', desc: 'Attacks on merchants/convoys in EZ' },
+  { id: ChinaEscalation.WiderWar, label: 'Wider War (4)', desc: 'Strikes on Taiwan island & US/Japan bases' },
+];
+
+export const coalitionLevels_ZH = [
   { id: CoalitionEscalation.TaiwanConstrained, label: '台灣受限 (1)', desc: '僅在領海內防禦 (Constrained)' },
   { id: CoalitionEscalation.TaiwanAssertive, label: '台灣反擊 (2)', desc: '主動攻擊封鎖兵力 (Assertive)' },
   { id: CoalitionEscalation.USConstrained, label: '美國受限 (3)', desc: '美軍介入護航，限制交戰區 (US Constrained)' },
   { id: CoalitionEscalation.WiderWar, label: '全面介入 (4)', desc: '攻擊中國本土 (Wider War)' },
 ];
 
+export const coalitionLevels_EN = [
+  { id: CoalitionEscalation.TaiwanConstrained, label: 'Taiwan Constrained (1)', desc: 'Defense only within territorial waters' },
+  { id: CoalitionEscalation.TaiwanAssertive, label: 'Taiwan Assertive (2)', desc: 'Active attacks on blockade forces' },
+  { id: CoalitionEscalation.USConstrained, label: 'US Constrained (3)', desc: 'US convoys, restricted engagement zone' },
+  { id: CoalitionEscalation.WiderWar, label: 'Wider War (4)', desc: 'Attacks on Chinese mainland' },
+];
+
 // Matrix Results
-export const getScenarioData = (china: ChinaEscalation, coalition: CoalitionEscalation): ScenarioResult => {
+export const getScenarioData = (china: ChinaEscalation, coalition: CoalitionEscalation, lang: 'zh' | 'en' = 'zh'): ScenarioResult => {
   const key = `${china}-${coalition}`;
   
+  // Helper for bilingual strings
+  const t = (zh: string, en: string) => lang === 'en' ? en : zh;
+
   // Default data for interpolated/uninteresting cells
   let result: ScenarioResult = {
     id: key,
-    name: "過渡/不對稱情境",
+    name: t("過渡/不對稱情境", "Transitional Scenario"),
     engName: "Transitional Scenario",
-    description: "此為力量極度不平衡或報告未詳細探討的中間情境。報告指出，這些情境通常會迅速向對角線（力量對等）收斂。",
+    description: t(
+      "此為力量極度不平衡或報告未詳細探討的中間情境。報告指出，這些情境通常會迅速向對角線（力量對等）收斂。",
+      "Intermediate scenario with extreme power imbalance or not detailed in report. The report notes these usually converge quickly to the diagonal (parity)."
+    ),
     electricity: 50,
     imports: 20,
     casualties_coalition: 500,
     casualties_china: 500,
     merchantLosses: 100,
-    summary: "資料推估：隨著局勢升級，台灣物資將快速短缺，傷亡取決於美軍介入程度。",
-    tacticalInsight: "報告指出，任何封鎖情境都會產生難以控制的升級壓力。"
+    summary: t(
+      "資料推估：隨著局勢升級，台灣物資將快速短缺，傷亡取決於美軍介入程度。",
+      "Estimation: As situation escalates, shortages worsen rapidly. Casualties depend on US intervention level."
+    ),
+    tacticalInsight: t(
+      "報告指出，任何封鎖情境都會產生難以控制的升級壓力。",
+      "Report indicates any blockade scenario creates uncontrollable escalation pressure."
+    )
   };
 
   // Table 5.2
   if (china === 1 && coalition === 1) {
     result = {
       id: "1x1",
-      name: "貓捉老鼠",
+      name: t("貓捉老鼠", "Cat and Mouse"),
       engName: "1x1: Cat and Mouse",
-      description: "中國使用海警/民兵登檢，台灣僅由海巡在領海應對。這是最低強度的對抗。",
+      description: t(
+        "中國使用海警/民兵登檢，台灣僅由海巡在領海應對。這是最低強度的對抗。",
+        "China uses Coast Guard/Militia for boarding; Taiwan responds only with Coast Guard in territorial waters. Lowest intensity."
+      ),
       electricity: 29, // Worst Week
       imports: 15, // Worst Week
       casualties_coalition: 0,
       casualties_china: 0,
       merchantLosses: 448, 
-      summary: "雖然沒有開火，但封鎖極為有效。僅13%的商船成功抵達。商船因保險失效停駛，台灣能源庫存耗盡後經濟崩潰。",
-      tacticalInsight: "惡劣天氣反而有利於台灣，因為會阻礙中國的小艇登檢行動（VBSS）。但總體運量仍遠不足需求。"
+      summary: t(
+        "雖然沒有開火，但封鎖極為有效。僅13%的商船成功抵達。商船因保險失效停駛，台灣能源庫存耗盡後經濟崩潰。",
+        "No shots fired, but blockade is highly effective. Only 13% of ships arrive. Insurance collapses, shipping stops, economy collapses after energy stocks run out."
+      ),
+      tacticalInsight: t(
+        "惡劣天氣反而有利於台灣，因為會阻礙中國的小艇登檢行動（VBSS）。但總體運量仍遠不足需求。",
+        "Bad weather actually helps Taiwan by hindering Chinese small boat boarding (VBSS). But total tonnage remains far below demand."
+      )
     };
   } 
   // Table 5.4
   else if (china === 1 && coalition === 2) {
     result = {
       id: "1x2",
-      name: "單方面屠殺",
+      name: t("單方面屠殺", "Unilateral Slaughter"),
       engName: "1x2: Imbalance",
-      description: "台灣動用海空軍攻擊中國海警船，而中國僅使用非軍事力量。",
+      description: t(
+        "台灣動用海空軍攻擊中國海警船，而中國僅使用非軍事力量。",
+        "Taiwan uses air/naval forces against Chinese Coast Guard, while China uses only non-military forces."
+      ),
       electricity: 61, // Worst Week
       imports: 16, // Worst Week
       casualties_coalition: 272,
       casualties_china: 3663, 
       merchantLosses: 7,
-      summary: "台灣海空軍迅速摧毀數百艘中國海警船。商船抵達率隨之回升。但這種單方面屠殺極可能給中國藉口升級到全面戰爭。",
-      tacticalInsight: "雖然台灣在戰術上獲勝，但擊沉大量中國執法船隻將導致政治上的災難性升級。"
+      summary: t(
+        "台灣海空軍迅速摧毀數百艘中國海警船。商船抵達率隨之回升。但這種單方面屠殺極可能給中國藉口升級到全面戰爭。",
+        "Taiwan forces rapidly destroy hundreds of CCG vessels. Shipping improves. But this slaughter likely gives China a pretext for total war."
+      ),
+      tacticalInsight: t(
+        "雖然台灣在戰術上獲勝，但擊沉大量中國執法船隻將導致政治上的災難性升級。",
+        "Tactical victory for Taiwan, but sinking mass law enforcement vessels leads to catastrophic political escalation."
+      )
     };
   }
   // Table 5.5
   else if (china === 2 && coalition === 1) {
     result = {
       id: "2x1",
-      name: "半隱晦封鎖",
+      name: t("半隱晦封鎖", "Semi-deniable Blockade"),
       engName: "2x1: Semi-deniable Blockade",
-      description: "中國使用潛艇發射魚雷與佈雷，台灣受限無法有效反潛。",
+      description: t(
+        "中國使用潛艇發射魚雷與佈雷，台灣受限無法有效反潛。",
+        "China uses subs (torpedoes/mines); Taiwan constrained, cannot effectively ASW."
+      ),
       electricity: 27, // Worst Week
       imports: 0, // Worst Week
       casualties_coalition: 1958, 
       casualties_china: 0,
       merchantLosses: 475,
-      summary: "單方面的屠殺。中國潛艇在第一個月就擊沉了59%的台灣商船。台灣經濟在8週內崩潰。商船船員拒絕出航。",
-      tacticalInsight: "這類似於2014克里米亞模式，中國試圖維持某種程度的「否認性」(deniability)，避免美軍介入。"
+      summary: t(
+        "單方面的屠殺。中國潛艇在第一個月就擊沉了59%的台灣商船。台灣經濟在8週內崩潰。商船船員拒絕出航。",
+        "One-sided slaughter. Chinese subs sink 59% of Taiwan merchant ships in month 1. Economy collapses in 8 weeks. Crews refuse to sail."
+      ),
+      tacticalInsight: t(
+        "這類似於2014克里米亞模式，中國試圖維持某種程度的「否認性」(deniability)，避免美軍介入。",
+        "Similar to Crimea 2014, China tries to maintain 'deniability' to avoid US intervention."
+      )
     };
   }
   // Table 5.6
   else if (china === 2 && coalition === 2) {
     result = {
       id: "2x2",
-      name: "消耗戰",
+      name: t("消耗戰", "Attrition"),
       engName: "2x2: Attrition",
-      description: "台灣全力反潛，但無美軍協助。中國潛艇與水雷對抗台灣海軍。",
+      description: t(
+        "台灣全力反潛，但無美軍協助。中國潛艇與水雷對抗台灣海軍。",
+        "Taiwan goes full ASW, no US help. Chinese subs/mines vs Taiwan Navy."
+      ),
       electricity: 26, // Worst Week
       imports: 2, // Worst Week
       casualties_coalition: 2256,
       casualties_china: 208,
       merchantLosses: 354,
-      summary: "台灣反潛彈藥在兩週內耗盡。雖然擊沉了幾艘中國老舊潛艇，但無法阻止商船被大量擊沉。傷亡比約為11:1。",
-      tacticalInsight: "即使台灣採取「烏克蘭模式」（獲得武器援助但無派兵），對反潛戰的幫助也微乎其微。"
+      summary: t(
+        "台灣反潛彈藥在兩週內耗盡。雖然擊沉了幾艘中國老舊潛艇，但無法阻止商船被大量擊沉。傷亡比約為11:1。",
+        "Taiwan ASW ammo runs out in 2 weeks. Sinks some old Chinese subs, but can't stop merchant losses. Casualty ratio ~11:1."
+      ),
+      tacticalInsight: t(
+        "即使台灣採取「烏克蘭模式」（獲得武器援助但無派兵），對反潛戰的幫助也微乎其微。",
+        "Even with 'Ukraine model' (aid but no troops), impact on ASW is minimal."
+      )
     };
   } 
   // Table 5.9
   else if (china === 2 && coalition === 3) {
     result = {
       id: "2x3",
-      name: "美軍介入反潛",
+      name: t("美軍介入反潛", "US ASW Intervention"),
       engName: "2x3: ASW Victory",
-      description: "美軍P-8與核潛艇協助獵殺共軍潛艇，但不攻擊中國本土。",
+      description: t(
+        "美軍P-8與核潛艇協助獵殺共軍潛艇，但不攻擊中國本土。",
+        "US P-8s and SSNs hunt PLA subs, but no strikes on mainland China."
+      ),
       electricity: 69, // Worst Week
       imports: 2, // Worst Week
       casualties_coalition: 1070, // US 815 + TW 255
       casualties_china: 1206,
       merchantLosses: 7,
-      summary: "美軍介入迅速扭轉局勢。中國潛艇威脅在一個月內被消除。電力生產在第7週後恢復至100%。",
-      tacticalInsight: "台灣東部海域範圍較小（約2萬平方公里），且美軍在日本有基地，沒有二戰大西洋的「空中掩護缺口」，反潛效率極高。"
+      summary: t(
+        "美軍介入迅速扭轉局勢。中國潛艇威脅在一個月內被消除。電力生產在第7週後恢復至100%。",
+        "US intervention turns the tide. Sub threat eliminated in 1 month. Power restores to 100% after week 7."
+      ),
+      tacticalInsight: t(
+        "台灣東部海域範圍較小（約2萬平方公里），且美軍在日本有基地，沒有二戰大西洋的「空中掩護缺口」，反潛效率極高。",
+        "Taiwan East coast is small area (~20k sq km). US has Japan bases, so no 'air cover gap' like WWII Atlantic. ASW is highly efficient."
+      )
     };
   }
   // Table 5.10
   else if (china === 3 && coalition === 2) {
     result = {
       id: "3x2",
-      name: "台灣孤軍奮戰",
+      name: t("台灣孤軍奮戰", "Taiwan Overwhelmed"),
       engName: "3x2: Overwhelmed",
-      description: "中國動用海空軍在境外打擊，台灣獨自應對。",
+      description: t(
+        "中國動用海空軍在境外打擊，台灣獨自應對。",
+        "China uses offshore air/naval strikes; Taiwan stands alone."
+      ),
       electricity: 69, // Worst Week
       imports: 2, // Worst Week
       casualties_coalition: 4411,
       casualties_china: 217,
       merchantLosses: 7, 
-      summary: "台灣海軍在試圖護航時被殲滅。為保存戰力，台灣隨後停止護航，導致封鎖完全生效。這不是台灣能獨自應對的情境。",
-      tacticalInsight: "台灣的大型水面艦艇防空飛彈數量（每支艦隊約75枚中遠程飛彈）遠不足以應對中國的飽和攻擊。"
+      summary: t(
+        "台灣海軍在試圖護航時被殲滅。為保存戰力，台灣隨後停止護航，導致封鎖完全生效。這不是台灣能獨自應對的情境。",
+        "Taiwan Navy annihilated trying to convoy. Stops convoys to save fleet, blockade becomes 100% effective. Taiwan cannot handle this alone."
+      ),
+      tacticalInsight: t(
+        "台灣的大型水面艦艇防空飛彈數量（每支艦隊約75枚中遠程飛彈）遠不足以應對中國的飽和攻擊。",
+        "Taiwan's large surface ships lack enough SAMs (~75 medium/long range per fleet) to handle Chinese saturation attacks."
+      )
     };
   }
   // Table 5.11
   else if (china === 3 && coalition === 3) {
     result = {
       id: "3x3",
-      name: "鐵籠格鬥 (Cage Fight)",
+      name: t("鐵籠格鬥", "Cage Fight"),
       engName: "3x3: The Cage Fight",
-      description: "雙方主力在台灣周邊海空域激戰，但不打擊本土。",
+      description: t(
+        "雙方主力在台灣周邊海空域激戰，但不打擊本土。",
+        "Main forces clash around Taiwan air/sea space, no mainland strikes."
+      ),
       electricity: 35, // Worst Week
       imports: 0, // Worst Week
       casualties_coalition: 4129, // US 3090 + TW 1039
       casualties_china: 3147,
       merchantLosses: 106,
-      summary: "極為血腥的護航戰。美軍與台灣損失約25艘大型軍艦，但成功維持了生命線，至第13週恢復經濟運轉。",
-      tacticalInsight: "中國空軍損失慘重（684架戰機）。美軍依靠日本基地至關重要；若日本不准使用基地，美軍將難以維持空優。"
+      summary: t(
+        "極為血腥的護航戰。美軍與台灣損失約25艘大型軍艦，但成功維持了生命線，至第13週恢復經濟運轉。",
+        "Bloody convoy battles. US/Taiwan lose ~25 large ships, but maintain lifeline. Economy recovers by week 13."
+      ),
+      tacticalInsight: t(
+        "中國空軍損失慘重（684架戰機）。美軍依靠日本基地至關重要；若日本不准使用基地，美軍將難以維持空優。",
+        "PLAAF loses heavily (684 jets). Japan bases are vital; without them, US cannot maintain air superiority."
+      )
     };
   }
   // Table 5.18
   else if (china === 4 && coalition === 4) {
     result = {
       id: "4x4",
-      name: "全面戰爭",
+      name: t("全面戰爭", "Wider War"),
       engName: "4x4: Wider War",
-      description: "無限制攻擊。中國攻擊美日基地與台灣電網，美軍攻擊中國沿海。",
+      description: t(
+        "無限制攻擊。中國攻擊美日基地與台灣電網，美軍攻擊中國沿海。",
+        "Unrestricted. China hits US/Japan bases & Taiwan grid. US hits Chinese coast."
+      ),
       electricity: 14, // Worst Week
       imports: 13, // Worst Week
       casualties_coalition: 23689, // US 13306 + TW 7666 + JP 2717
       casualties_china: 13675,
       merchantLosses: 49, // Base case
-      summary: "美軍損失兩艘航母。中國海軍被全殲。台灣雖然獲得物資，但電網被炸毀，導致電力在最差週僅剩14%。",
-      tacticalInsight: "即便物資運抵，台灣的能源基礎設施（電廠、變電所）因遭導彈攻擊而癱瘓，是此情境的最大弱點。"
+      summary: t(
+        "美軍損失兩艘航母。中國海軍被全殲。台灣雖然獲得物資，但電網被炸毀，導致電力在最差週僅剩14%。",
+        "US loses 2 carriers. PLAN wiped out. Taiwan gets supplies, but grid destroyed, power drops to 14%."
+      ),
+      tacticalInsight: t(
+        "即便物資運抵，台灣的能源基礎設施（電廠、變電所）因遭導彈攻擊而癱瘓，是此情境的最大弱點。",
+        "Even if supplies arrive, energy infrastructure (plants, substations) paralysis from missile strikes is the biggest weakness."
+      )
     };
   }
   // Table 5.15 (China Offshore Kinetic vs US Wider War)
   else if (china === 3 && coalition === 4) {
     result = {
       id: "3x4",
-      name: "不對稱打擊",
+      name: t("不對稱打擊", "Asymmetric Strike"),
       engName: "3x4: Asymmetric Strike",
-      description: "中國僅限境外海戰，但美軍對中國本土沿海目標（機場、港口）發動全面攻擊。",
+      description: t(
+        "中國僅限境外海戰，但美軍對中國本土沿海目標（機場、港口）發動全面攻擊。",
+        "China limited to offshore, but US launches full strikes on China coastal targets (airbases, ports)."
+      ),
       electricity: 100, // End of Game
       imports: 100, // End of Game
       casualties_coalition: 5355, // US 4295 + TW 1060
       casualties_china: 7091,
       merchantLosses: 47,
-      summary: "中國海軍在五週內被全殲。美軍利用遠程火力摧毀中國沿海空軍基地。對中國而言，這是軍事與外交的雙重災難。",
-      tacticalInsight: "此情境顯示，若中國不敢攻擊美軍日本基地，將處於極度劣勢。這會迫使中國選擇失敗或升級（攻擊日本）。"
+      summary: t(
+        "中國海軍在五週內被全殲。美軍利用遠程火力摧毀中國沿海空軍基地。對中國而言，這是軍事與外交的雙重災難。",
+        "PLAN wiped out in 5 weeks. US long-range fires destroy coastal airbases. Military and diplomatic disaster for China."
+      ),
+      tacticalInsight: t(
+        "此情境顯示，若中國不敢攻擊美軍日本基地，將處於極度劣勢。這會迫使中國選擇失敗或升級（攻擊日本）。",
+        "Shows China is at extreme disadvantage if it dares not hit Japan bases. Forces choice: lose or escalate (hit Japan)."
+      )
     };
   }
   // Table 5.17 (China Wider War vs US Constrained)
   else if (china === 4 && coalition === 3) {
     result = {
       id: "4x3",
-      name: "被動挨打",
+      name: t("被動挨打", "Sitting Duck"),
       engName: "4x3: US Constrained",
-      description: "中國攻擊美軍基地與台灣電網，但美軍受限不攻擊中國本土。",
+      description: t(
+        "中國攻擊美軍基地與台灣電網，但美軍受限不攻擊中國本土。",
+        "China hits US bases & Taiwan grid; US constrained, no mainland strikes."
+      ),
       electricity: 0, // Worst Week & End of Game
       imports: 0, // Worst Week
       casualties_coalition: 30589, // US 18785 + TW 7666 + JP 4138
       casualties_china: 4284,
       merchantLosses: 80,
-      summary: "美軍損失慘重（含2艘航母），且因不攻擊中國本土而無法有效壓制共軍。台灣電網全毀，電力歸零。",
-      tacticalInsight: "這是對美軍最不利的情境。限制攻擊中國本土（如機場）讓共軍能集結兵力發動飽和攻擊，導致美軍傷亡最大化。"
+      summary: t(
+        "美軍損失慘重（含2艘航母），且因不攻擊中國本土而無法有效壓制共軍。台灣電網全毀，電力歸零。",
+        "Heavy US losses (2 carriers). Cannot suppress PLA without mainland strikes. Taiwan grid destroyed, power zero."
+      ),
+      tacticalInsight: t(
+        "這是對美軍最不利的情境。限制攻擊中國本土（如機場）讓共軍能集結兵力發動飽和攻擊，導致美軍傷亡最大化。",
+        "Worst case for US. Not hitting mainland (airbases) allows PLA to mass forces for saturation attacks, maximizing US casualties."
+      )
     };
   }
   // Table 5.16
   else if (china === 4 && coalition === 2) {
      result = {
       id: "4x2",
-      name: "毀滅性打擊",
+      name: t("毀滅性打擊", "Devastation"),
       engName: "4x2: Devastation",
-      description: "中國全面攻擊，台灣孤軍奮戰。",
+      description: t(
+        "中國全面攻擊，台灣孤軍奮戰。",
+        "China total attack, Taiwan stands alone."
+      ),
       electricity: 24, // Worst Week
       imports: 0, // Worst Week
       casualties_coalition: 3168, // TW 2913 + US 255 (US sent convoy week 2/4 then stopped)
       casualties_china: 255,
       merchantLosses: 47,
-      summary: "台灣海空軍在初期即被摧毀。能源與物資斷絕，經濟崩潰。美國曾試圖護航但失敗撤回。",
-      tacticalInsight: "中國甚至不需要攻擊電網，光是封鎖就足以讓台灣能源耗盡。"
+      summary: t(
+        "台灣海空軍在初期即被摧毀。能源與物資斷絕，經濟崩潰。美國曾試圖護航但失敗撤回。",
+        "Taiwan forces destroyed early. Energy/supplies cut, economy collapses. US tried convoy but failed/withdrew."
+      ),
+      tacticalInsight: t(
+        "中國甚至不需要攻擊電網，光是封鎖就足以讓台灣能源耗盡。",
+        "China doesn't even need to hit grid; blockade alone drains Taiwan's energy."
+      )
     };
   }
 
@@ -216,24 +340,21 @@ export const getScenarioData = (china: ChinaEscalation, coalition: CoalitionEsca
 };
 
 // Energy Timeline Data (Page 86 Zero Baseline)
-export const energyData: EnergyDataPoint[] = Array.from({ length: 21 }, (_, i) => {
+export const energyData_ZH: EnergyDataPoint[] = Array.from({ length: 21 }, (_, i) => {
   const week = i;
   
-  // Base: Week 3 Gas out (73%), Week 9 Coal out (24%), Week 21 Oil out (17%)
   let base = 100;
   if (week >= 3) base = 73;
   if (week >= 9) base = 24;
   if (week >= 20) base = 17;
 
-  // Prepared: Delays severe reductions to Week 12, Crisis to Week 18
   let prepared = 100;
   if (week >= 12) prepared = 50; 
   if (week >= 18) prepared = 33;
 
-  // Green: Hits severe (18% reference in text) in Week 3, Crisis in Week 7
   let green = 100;
-  if (week >= 3) green = 45; // Interim drop
-  if (week >= 8) green = 18; // Text says "by week 8... down to 18 percent"
+  if (week >= 3) green = 45; 
+  if (week >= 8) green = 18; 
   
   let annotation = "";
   if (week === 3) annotation = "天然氣耗盡";
@@ -243,15 +364,47 @@ export const energyData: EnergyDataPoint[] = Array.from({ length: 21 }, (_, i) =
   return { week, base, prepared, green, annotation };
 });
 
+export const energyData_EN: EnergyDataPoint[] = Array.from({ length: 21 }, (_, i) => {
+  const week = i;
+  
+  let base = 100;
+  if (week >= 3) base = 73;
+  if (week >= 9) base = 24;
+  if (week >= 20) base = 17;
+
+  let prepared = 100;
+  if (week >= 12) prepared = 50; 
+  if (week >= 18) prepared = 33;
+
+  let green = 100;
+  if (week >= 3) green = 45; 
+  if (week >= 8) green = 18; 
+  
+  let annotation = "";
+  if (week === 3) annotation = "Gas Out";
+  if (week === 9) annotation = "Coal Out";
+  if (week === 20) annotation = "Oil Out";
+
+  return { week, base, prepared, green, annotation };
+});
+
+
 // Table 4.5
-export const economicImpacts: ImpactCategory[] = [
+export const economicImpacts_ZH: ImpactCategory[] = [
   { sector: "晶片製造 (TSMC)", impact80: "正常運作", impact60: "正常運作 (優先供電)", impact40: "減產至56% (優先供電)", impact20: "完全停產 (僅剩8%)" },
   { sector: "民生用電", impact80: "自願節電", impact60: "分區限電", impact40: "每日供電12小時", impact20: "每日供電10小時" },
   { sector: "鋼鐵工業", impact80: "減產27%", impact60: "減產40%", impact40: "僅剩7%產能", impact20: "完全停產" },
   { sector: "食品供應", impact80: "充足", impact60: "種類減少", impact40: "配給制", impact20: "依靠庫存(可撐9個月)" },
 ];
 
-export const mapFeatures: MapFeature[] = [
+export const economicImpacts_EN: ImpactCategory[] = [
+  { sector: "Chip Mfg (TSMC)", impact80: "Normal", impact60: "Normal (Priority)", impact40: "Cut to 56% (Priority)", impact20: "Shutdown (8% left)" },
+  { sector: "Residential Power", impact80: "Voluntary cuts", impact60: "Rolling blackouts", impact40: "12 hrs/day", impact20: "10 hrs/day" },
+  { sector: "Steel Industry", impact80: "Cut 27%", impact60: "Cut 40%", impact40: "7% Capacity", impact20: "Shutdown" },
+  { sector: "Food Supply", impact80: "Sufficient", impact60: "Reduced variety", impact40: "Rationing", impact20: "Inventory only (9 mo)" },
+];
+
+export const mapFeatures_ZH: MapFeature[] = [
   {
     id: "exclusion-zone",
     label: "中國宣告排他區 (Exclusion Zone)",
@@ -284,7 +437,40 @@ export const mapFeatures: MapFeature[] = [
   }
 ];
 
-export const timelineEvents: TimelineEvent[] = [
+export const mapFeatures_EN: MapFeature[] = [
+  {
+    id: "exclusion-zone",
+    label: "China Exclusion Zone",
+    type: "zone",
+    visibleIn: [1, 2, 3, 4],
+    description: "Zone declared by China; ships intercepted. Roughly overlaps Taiwan ADIZ."
+  },
+  {
+    id: "convoy-route",
+    label: "Yonaguni-Hualien Corridor",
+    type: "route",
+    visibleIn: [3, 4],
+    description: "54nm (100km) sprint. 'Cage fight' area for US/JP/TW fleets vs PLA."
+  },
+  {
+    id: "port-japan",
+    label: "JP Transshipment Port",
+    type: "point",
+    coordinates: { x: 75, y: 15 },
+    visibleIn: [1, 2, 3, 4],
+    description: "Ocean ships unload in Japan; shuttles take goods to Taiwan due to war risk."
+  },
+  {
+    id: "energy-target",
+    label: "Energy Terminal/Grid",
+    type: "point",
+    coordinates: { x: 45, y: 55 },
+    visibleIn: [4],
+    description: "Wider War: PLA bombs plants/substations. Supplies useless if grid down."
+  }
+];
+
+export const timelineEvents_ZH: TimelineEvent[] = [
   {
     year: "2005",
     title: "反分裂國家法通過",
@@ -322,7 +508,45 @@ export const timelineEvents: TimelineEvent[] = [
   }
 ];
 
-export const airliftComparison: AirliftData[] = [
+export const timelineEvents_EN: TimelineEvent[] = [
+  {
+    year: "2005",
+    title: "Anti-Secession Law Passed",
+    description: "Beijing authorizes non-peaceful means if 'possibility of peaceful reunification is lost'.",
+    insight: "Provides domestic legal basis for blockade as 'internal affair' not war.",
+    iconType: "political"
+  },
+  {
+    year: "2021",
+    title: "Davidson Window",
+    description: "Adm. Davidson warns China could have capability to invade by 2027.",
+    insight: "Sparked US military anxiety over 2027 timeline, despite Xi denying specific plans.",
+    iconType: "military"
+  },
+  {
+    year: "2022",
+    title: "Pelosi Visit & Drills",
+    description: "PLA fires missiles over Taiwan, holds live-fire drills in 6 zones.",
+    insight: "Rehearsal for 'quarantine' or 'blockade', showing PLA ability to cut off Taiwan.",
+    iconType: "military"
+  },
+  {
+    year: "2025",
+    title: "Tension Escalates",
+    description: "Background: US-China relations worsen. SecDef Hegseth reaffirms commitment, Trump ambiguous.",
+    insight: "Strategic ambiguity might lead Beijing to think it can 'quarantine' Taiwan without US intervention.",
+    iconType: "political"
+  },
+  {
+    year: "2028",
+    title: "Scenario Start: Blockade",
+    description: "Xi chooses action. Rejects high-risk invasion, chooses 'Joint Blockade Campaign'.",
+    insight: "Blockade is not low-risk. Easily spirals out of control; global economic hit forces international response.",
+    iconType: "military"
+  }
+];
+
+export const airliftComparison_ZH: AirliftData[] = [
   {
     scenario: "1948 柏林空運",
     tonsPerDay: 4500,
@@ -343,14 +567,42 @@ export const airliftComparison: AirliftData[] = [
   }
 ];
 
-export const globalGdpImpact: GdpComparisonData[] = [
+export const airliftComparison_EN: AirliftData[] = [
+  {
+    scenario: "1948 Berlin Airlift",
+    tonsPerDay: 4500,
+    population: 2.8,
+    description: "Most successful airlift ever. Allies supplied city with USSR not interfering."
+  },
+  {
+    scenario: "2028 Taiwan Demand (Min)",
+    tonsPerDay: 43070,
+    population: 23.6,
+    description: "Min survival needs (energy/food/meds). Nearly 10x Berlin's needs."
+  },
+  {
+    scenario: "US Airlift Capacity (Est)",
+    tonsPerDay: 34400, 
+    population: 0,
+    description: "Even with all C-17s and Japan bases, meets only ~17% of demand (mostly can't move gas/coal)."
+  }
+];
+
+export const globalGdpImpact_ZH: GdpComparisonData[] = [
   { region: "俄羅斯 (2022)", gdp: 2.4, role: "主要出口能源/糧食" },
   { region: "烏克蘭 (2021)", gdp: 0.2, role: "主要出口糧食" },
   { region: "台灣 (2024)", gdp: 0.8, role: "全球供應鏈核心 (晶片)" },
   { region: "中國 (2024)", gdp: 18.8, role: "世界工廠" }
 ];
 
-export const simulationModules: SimulationModule[] = [
+export const globalGdpImpact_EN: GdpComparisonData[] = [
+  { region: "Russia (2022)", gdp: 2.4, role: "Major Energy/Food Exporter" },
+  { region: "Ukraine (2021)", gdp: 0.2, role: "Major Food Exporter" },
+  { region: "Taiwan (2024)", gdp: 0.8, role: "Supply Chain Core (Chips)" },
+  { region: "China (2024)", gdp: 18.8, role: "World's Factory" }
+];
+
+export const simulationModules_ZH: SimulationModule[] = [
   {
     id: 1,
     title: "模組 1: 商船可用性",
@@ -374,7 +626,31 @@ export const simulationModules: SimulationModule[] = [
   }
 ];
 
-export const freePlayGames: FreePlayGame[] = [
+export const simulationModules_EN: SimulationModule[] = [
+  {
+    id: 1,
+    title: "Module 1: Merchant Availability",
+    question: "Who will sail into risk?",
+    method: "Shipping data analysis & requisition laws",
+    keyFinding: "Commercial shipping stops. Taiwan must rely on requisitioned national ships (incl. flags of convenience). LNG ship shortage is key bottleneck."
+  },
+  {
+    id: 2,
+    title: "Module 2: Throughput",
+    question: "How much cargo gets through?",
+    method: "ISR detection + Intercept prob + Convoy loss sim",
+    keyFinding: "Without US, PLA subs sink ~50% of ships. With US convoys, loss rate drops to 3-5%, but at cost of warships."
+  },
+  {
+    id: 3,
+    title: "Module 3: Economic Impact",
+    question: "How shortage destroys economy?",
+    method: "Energy I/O model + Priority allocation",
+    keyFinding: "Electricity is key. Below 40% power, chip fabs cut huge production, devastating global economy. Food is easier to solve."
+  }
+];
+
+export const freePlayGames_ZH: FreePlayGame[] = [
   {
     id: 1,
     title: "Game 1: 螺旋升級",
@@ -422,7 +698,55 @@ export const freePlayGames: FreePlayGame[] = [
   }
 ];
 
-export const policyOptions: PolicyOption[] = [
+export const freePlayGames_EN: FreePlayGame[] = [
+  {
+    id: 1,
+    title: "Game 1: Spiraling Escalation",
+    outcome: "Escalation",
+    trigger: "China initiates massive fire strike",
+    insight: "'Shock and awe' tactics often trigger stronger retaliation. Both sides hit mainland bases; heavy casualties.",
+    description: "China destroys TW forces. US hits China airbases. China hits Guam/Japan bases. Total war.",
+    casualties: { coalition: 20634, china: 3620 }
+  },
+  {
+    id: 2,
+    title: "Game 2: Miscalculation",
+    outcome: "Escalation",
+    trigger: "Skirmish between convoy & PLA",
+    insight: "Both tried to signal 'restraint', but fog of war led to 'escalation' interpretation.",
+    description: "Small naval battle escalates. China missiles Taiwan, lands on Penghu. Coalition holds lifeline despite losses.",
+    casualties: { coalition: 6612, china: 1122 }
+  },
+  {
+    id: 3,
+    title: "Game 3: Economic Stranglehold",
+    outcome: "Stalemate",
+    trigger: "US refuses convoy, uses distant blockade",
+    insight: "US avoids hot war, uses sanctions & Malacca blockade. Contest of wills.",
+    description: "Taiwan struggles in economic suffocation. US seizes China assets, cuts Mideast energy. Long economic war.",
+    casualties: { coalition: 68, china: 500 }
+  },
+  {
+    id: 4,
+    title: "Game 4: The Off-Ramp",
+    outcome: "Off-Ramp",
+    trigger: "Costs become too high",
+    insight: "Political resolution is central. After fierce battles, sides seek exit.",
+    description: "China proposes ceasefire: TW President steps down, US withdraws. Harsh, but avoids annihilation.",
+    casualties: { coalition: 438, china: 503 } 
+  },
+  {
+    id: 5,
+    title: "Game 5: Diplomatic Compromise",
+    outcome: "Off-Ramp",
+    trigger: "Japan actively mediates",
+    insight: "Third party (Japan) provides face-saving mechanism.",
+    description: "China takes Kinmen/Matsu. Japan organizes humanitarian convoy. Deal: Joint China-Japan convoys (recognizing China's 'enforcement' rights) save Taiwan.",
+    casualties: { coalition: 264, china: 116 } 
+  }
+];
+
+export const policyOptions_ZH: PolicyOption[] = [
   {
     id: "merchant_prep",
     category: "merchant",
@@ -478,3 +802,73 @@ export const policyOptions: PolicyOption[] = [
     insight: "若無日本基地，美軍需從關島出擊，戰力將大打折扣。"
   }
 ];
+
+export const policyOptions_EN: PolicyOption[] = [
+  {
+    id: "merchant_prep",
+    category: "merchant",
+    title: "Requisition Ships",
+    description: "Law to requisition all Taiwan-owned ships (incl. flags of convenience).",
+    impact: "Merchant fleet +300%, spreading risk.",
+    enduranceBonus: 20,
+    insight: "Crucial preparation. Without ships, escorts are useless."
+  },
+  {
+    id: "lng_fleet",
+    category: "merchant",
+    title: "Expand LNG Fleet",
+    description: "US-TW contract to reserve LNG carriers.",
+    impact: "Ensures gas supply continuity.",
+    enduranceBonus: 15,
+    insight: "Gas is Taiwan's Achilles heel; LNG ships can't be requisitioned last minute."
+  },
+  {
+    id: "harden_grid",
+    category: "energy",
+    title: "Harden Grid",
+    description: "Disperse substations, more spares/repair crews.",
+    impact: "Halves missile damage, doubles repair speed.",
+    enduranceBonus: 30,
+    insight: "Sim shows hardened grid holds 75% capacity under fire; unhardened goes to zero."
+  },
+  {
+    id: "nuclear_reserve",
+    category: "energy",
+    title: "Keep Nuclear",
+    description: "Extend nuclear plant life, reduce import reliance.",
+    impact: "Provides 6% stable baseload, immune to blockade.",
+    enduranceBonus: 10,
+    insight: "Small %, but the last line of defense for hospitals/C2 when gas/oil are gone."
+  },
+  {
+    id: "us_convoy",
+    category: "us_aid",
+    title: "US Convoy Training",
+    description: "Resume Cold War convoy drills/doctrine.",
+    impact: "Convoy efficiency up, loss rate down 50%.",
+    enduranceBonus: 15,
+    insight: "US hasn't done big convoys in 30 years; needs to re-learn protecting slow ships."
+  },
+  {
+    id: "japan_access",
+    category: "us_aid",
+    title: "Japan Access",
+    description: "Ensure Japan allows US base/port use.",
+    impact: "Key to air superiority & short supply lines.",
+    enduranceBonus: 25,
+    insight: "Without Japan, US flies from Guam; combat power drops drastically."
+  }
+];
+
+// Backwards compatibility exports (Defaulting to ZH)
+export const chinaLevels = chinaLevels_ZH;
+export const coalitionLevels = coalitionLevels_ZH;
+export const energyData = energyData_ZH;
+export const economicImpacts = economicImpacts_ZH;
+export const mapFeatures = mapFeatures_ZH;
+export const timelineEvents = timelineEvents_ZH;
+export const airliftComparison = airliftComparison_ZH;
+export const globalGdpImpact = globalGdpImpact_ZH;
+export const simulationModules = simulationModules_ZH;
+export const freePlayGames = freePlayGames_ZH;
+export const policyOptions = policyOptions_ZH;

@@ -1,18 +1,20 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { timelineEvents } from '../data';
+import { timelineEvents_ZH, timelineEvents_EN } from '../data';
 import { Calendar, AlertTriangle, Scale } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const ContextTimeline: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+  const { t, language } = useLanguage();
+  const timelineEvents = language === 'en' ? timelineEvents_EN : timelineEvents_ZH;
 
   return (
     <div className="w-full bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-stone-200">
       <div className="text-center mb-10">
-        <h3 className="serif text-2xl font-bold text-gray-900 mb-3">通往 2028：危機如何升級？</h3>
+        <h3 className="serif text-2xl font-bold text-gray-900 mb-3">{t("timeline.title")}</h3>
         <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm">
-          報告設定的情境並非憑空發生。從法律戰準備到軍事演習，中國已逐步建立實施「聯合封鎖戰役」的能力與正當性論述。
+          {t("timeline.desc")}
         </p>
       </div>
 
@@ -51,7 +53,7 @@ const ContextTimeline: React.FC = () => {
                   
                   <div className="flex items-center text-xs font-medium text-red-600 uppercase tracking-wider">
                     <AlertTriangle size={12} className="mr-1" />
-                    點擊查看戰略洞察
+                    {t("timeline.click")}
                   </div>
 
                   <AnimatePresence>
@@ -63,7 +65,7 @@ const ContextTimeline: React.FC = () => {
                         className="mt-4 pt-4 border-t border-red-100"
                       >
                         <p className="text-sm text-red-800 italic bg-red-50 p-3 rounded">
-                          <span className="font-bold block mb-1 not-italic text-red-900">Insight:</span>
+                          <span className="font-bold block mb-1 not-italic text-red-900">{t("timeline.insight")}</span>
                           "{event.insight}"
                         </p>
                       </motion.div>

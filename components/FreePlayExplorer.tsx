@@ -1,20 +1,22 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { freePlayGames } from '../data';
+import { freePlayGames_ZH, freePlayGames_EN } from '../data';
 import { Play, TrendingUp, Handshake, Skull, AlertOctagon } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const FreePlayExplorer: React.FC = () => {
   const [selectedGameId, setSelectedGameId] = useState<number>(1);
+  const { t, language } = useLanguage();
+  const freePlayGames = language === 'en' ? freePlayGames_EN : freePlayGames_ZH;
 
   const selectedGame = freePlayGames.find(g => g.id === selectedGameId) || freePlayGames[0];
 
   return (
     <div className="w-full bg-stone-900 text-stone-100 rounded-2xl overflow-hidden shadow-xl border border-stone-700">
       <div className="p-6 md:p-8 bg-stone-800 border-b border-stone-700">
-        <h3 className="serif text-2xl font-bold mb-2">自由兵推 (Free Play): 當人類介入</h3>
+        <h3 className="serif text-2xl font-bold mb-2">{t("freeplay.title")}</h3>
         <p className="text-stone-400 text-sm">
-          電腦模型是線性的，但人類決策是混亂的。CSIS 邀請專家進行了5場無腳本兵推，結果顯示「升級」幾乎無法避免。
+          {t("freeplay.desc")}
         </p>
       </div>
 
@@ -56,7 +58,7 @@ const FreePlayExplorer: React.FC = () => {
                   selectedGame.outcome === 'Off-Ramp' ? 'bg-green-900/50 text-green-400' :
                   'bg-yellow-900/50 text-yellow-400'
                 }`}>
-                  結果: {selectedGame.outcome}
+                  {t("freeplay.result")} {selectedGame.outcome}
                 </div>
                 <h4 className="text-2xl font-bold">{selectedGame.trigger}</h4>
               </div>
@@ -64,7 +66,7 @@ const FreePlayExplorer: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-stone-800/50 p-4 rounded-lg border border-stone-700">
                   <h5 className="text-sm font-bold text-stone-400 uppercase mb-2 flex items-center">
-                    <Play size={14} className="mr-2" /> 情境敘述
+                    <Play size={14} className="mr-2" /> {t("freeplay.scenario")}
                   </h5>
                   <p className="text-stone-300 leading-relaxed text-sm">
                     {selectedGame.description}
@@ -73,11 +75,11 @@ const FreePlayExplorer: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-stone-800 p-4 rounded-lg">
-                    <div className="text-xs text-stone-500 mb-1">聯軍傷亡 (人)</div>
+                    <div className="text-xs text-stone-500 mb-1">{t("freeplay.coalition_cas")}</div>
                     <div className="text-xl font-mono text-blue-400 font-bold">{selectedGame.casualties.coalition.toLocaleString()}</div>
                   </div>
                   <div className="bg-stone-800 p-4 rounded-lg">
-                    <div className="text-xs text-stone-500 mb-1">共軍傷亡 (人)</div>
+                    <div className="text-xs text-stone-500 mb-1">{t("freeplay.china_cas")}</div>
                     <div className="text-xl font-mono text-red-400 font-bold">{selectedGame.casualties.china.toLocaleString()}</div>
                   </div>
                 </div>

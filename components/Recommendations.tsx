@@ -1,31 +1,33 @@
-
 import React from 'react';
 import { Ship, Battery, Globe, Shield } from 'lucide-react';
-
-const recs = [
-  {
-    icon: <Ship className="w-6 h-6" />,
-    title: "1. 準備商船隊",
-    content: "徵用機制與 LNG 船隊擴建"
-  },
-  {
-    icon: <Battery className="w-6 h-6" />,
-    title: "2. 強化能源韌性",
-    content: "電網加固與增加戰略庫存"
-  },
-  {
-    icon: <Globe className="w-6 h-6" />,
-    title: "3. 美國援助計畫",
-    content: "重啟護航演習與盟友協調"
-  },
-  {
-    icon: <Shield className="w-6 h-6" />,
-    title: "4. 反制與結束",
-    content: "建立外交聯盟與下台階機制"
-  }
-];
+import { useLanguage } from '../context/LanguageContext';
 
 const Recommendations: React.FC = () => {
+  const { t } = useLanguage();
+
+  const recs = [
+    {
+      icon: <Ship className="w-6 h-6" />,
+      title: t("rec.1.title"),
+      content: t("rec.1.content")
+    },
+    {
+      icon: <Battery className="w-6 h-6" />,
+      title: t("rec.2.title"),
+      content: t("rec.2.content")
+    },
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: t("rec.3.title"),
+      content: t("rec.3.content")
+    },
+    {
+      icon: <Shield className="w-6 h-6" />,
+      title: t("rec.4.title"),
+      content: t("rec.4.content")
+    }
+  ];
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {recs.map((rec, idx) => (

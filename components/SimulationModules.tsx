@@ -1,12 +1,15 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { simulationModules } from '../data';
+import { simulationModules_ZH, simulationModules_EN } from '../data';
 import { Box, Target, Zap } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const icons = [Box, Target, Zap];
 
 const SimulationModules: React.FC = () => {
+  const { t, language } = useLanguage();
+  const simulationModules = language === 'en' ? simulationModules_EN : simulationModules_ZH;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {simulationModules.map((mod, idx) => {
@@ -25,15 +28,15 @@ const SimulationModules: React.FC = () => {
             <h4 className="font-bold text-gray-800 text-lg mb-2">{mod.title}</h4>
             <div className="space-y-3">
               <div>
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">核心問題</span>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">{t("sim.question")}</span>
                 <p className="text-sm text-gray-600">{mod.question}</p>
               </div>
               <div>
-                <span className="text-xs font-bold text-green-600 uppercase tracking-wide">分析方法</span>
+                <span className="text-xs font-bold text-green-600 uppercase tracking-wide">{t("sim.method")}</span>
                 <p className="text-sm text-gray-600">{mod.method}</p>
               </div>
               <div className="bg-stone-50 p-3 rounded border border-stone-100 mt-2">
-                <span className="text-xs font-bold text-red-600 uppercase tracking-wide block mb-1">關鍵發現</span>
+                <span className="text-xs font-bold text-red-600 uppercase tracking-wide block mb-1">{t("sim.finding")}</span>
                 <p className="text-xs text-gray-700 leading-relaxed">{mod.keyFinding}</p>
               </div>
             </div>

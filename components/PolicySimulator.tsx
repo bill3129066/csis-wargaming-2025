@@ -1,11 +1,13 @@
-
 import React, { useState } from 'react';
-import { policyOptions } from '../data';
+import { policyOptions_ZH, policyOptions_EN } from '../data';
 import { Check, ShieldCheck, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 const PolicySimulator: React.FC = () => {
   const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
+  const { t, language } = useLanguage();
+  const policyOptions = language === 'en' ? policyOptions_EN : policyOptions_ZH;
 
   const togglePolicy = (id: string) => {
     if (selectedPolicies.includes(id)) {
@@ -25,18 +27,18 @@ const PolicySimulator: React.FC = () => {
   const totalScore = Math.min(100, baseScore + totalBonus);
 
   const getStatusMessage = (score: number) => {
-    if (score < 40) return "高風險：台灣將在 3-4 週內面臨能源崩潰，迫使在國際介入前投降。";
-    if (score < 70) return "中等韌性：能撐過初期衝擊，但長期仍需依賴美軍打破封鎖。";
-    if (score < 90) return "高韌性：能源與物資能維持數月，給予外交斡旋與軍事準備充足時間。";
-    return "堅不可摧：封鎖對中國將變成昂貴且無效的消耗戰，有效嚇阻戰爭。";
+    if (score < 40) return t("policy.status.low");
+    if (score < 70) return t("policy.status.med");
+    if (score < 90) return t("policy.status.high");
+    return t("policy.status.fortress");
   };
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-blue-100 overflow-hidden">
       <div className="bg-blue-600 p-6 text-white">
-        <h3 className="serif text-2xl font-bold mb-2">政策模擬器：打造韌性之島</h3>
+        <h3 className="serif text-2xl font-bold mb-2">{t("policy.title")}</h3>
         <p className="text-blue-100 text-sm">
-          我們無法控制中國何時行動，但可以控制台灣多難被擊倒。選擇政策組合，觀察「國家耐力」的變化。
+          {t("policy.desc")}
         </p>
       </div>
 
@@ -44,7 +46,7 @@ const PolicySimulator: React.FC = () => {
         {/* Score Bar */}
         <div className="mb-10">
           <div className="flex justify-between items-end mb-2">
-            <span className="font-bold text-gray-700">國家耐力評估 (Resilience Score)</span>
+            <span className="font-bold text-gray-700">{t("policy.score")}</span>
             <span className="text-3xl font-bold text-blue-600">{totalScore}/100</span>
           </div>
           <div className="w-full bg-gray-200 h-4 rounded-full overflow-hidden relative">
@@ -59,7 +61,7 @@ const PolicySimulator: React.FC = () => {
             <div className="absolute top-0 bottom-0 left-[70%] w-0.5 bg-white/50 border-r border-gray-400 border-dashed"></div>
           </div>
           <p className="mt-3 text-sm text-gray-600 bg-stone-50 p-3 rounded border border-stone-100">
-            <strong>預測結果：</strong> {getStatusMessage(totalScore)}
+            <strong>{t("policy.prediction")}</strong> {getStatusMessage(totalScore)}
           </p>
         </div>
 

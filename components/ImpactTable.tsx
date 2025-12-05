@@ -1,18 +1,21 @@
-
 import React from 'react';
-import { economicImpacts } from '../data';
+import { economicImpacts_ZH, economicImpacts_EN } from '../data';
+import { useLanguage } from '../context/LanguageContext';
 
 const ImpactTable: React.FC = () => {
+  const { t, language } = useLanguage();
+  const economicImpacts = language === 'en' ? economicImpacts_EN : economicImpacts_ZH;
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-sm text-sm">
         <thead className="bg-stone-100 border-b border-stone-200">
           <tr>
-            <th className="py-3 px-4 text-left font-bold text-gray-700">產業/部門</th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">電力 80%</th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">電力 60%</th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">電力 40%</th>
-            <th className="py-3 px-4 text-left font-semibold text-red-600">電力 20%</th>
+            <th className="py-3 px-4 text-left font-bold text-gray-700">{t("impact.sector")}</th>
+            <th className="py-3 px-4 text-left font-semibold text-gray-600">{t("impact.power80")}</th>
+            <th className="py-3 px-4 text-left font-semibold text-gray-600">{t("impact.power60")}</th>
+            <th className="py-3 px-4 text-left font-semibold text-gray-600">{t("impact.power40")}</th>
+            <th className="py-3 px-4 text-left font-semibold text-red-600">{t("impact.power20")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-stone-100">

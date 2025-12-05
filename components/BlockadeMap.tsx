@@ -1,18 +1,20 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { mapFeatures } from '../data';
+import { mapFeatures_ZH, mapFeatures_EN } from '../data';
 import { Info } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const BlockadeMap: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
+  const { t, language } = useLanguage();
+  const mapFeatures = language === 'en' ? mapFeatures_EN : mapFeatures_ZH;
 
   return (
     <div className="w-full bg-blue-50 rounded-xl overflow-hidden shadow-inner border border-blue-100 relative h-[500px] md:h-[600px]">
       <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur p-4 rounded-lg shadow-sm max-w-xs">
-        <h4 className="font-bold text-gray-800 mb-2">台海封鎖戰略圖</h4>
+        <h4 className="font-bold text-gray-800 mb-2">{t("map.title")}</h4>
         <p className="text-xs text-gray-600 mb-3">
-          點擊地圖上的元素查看詳情。這是一場地理與後勤的戰爭。
+          {t("map.desc")}
         </p>
         <div className="space-y-2">
           {mapFeatures.map(f => (
@@ -59,7 +61,7 @@ const BlockadeMap: React.FC = () => {
 
         {/* China Mainland */}
         <path d="M-50 0 L300 0 L280 100 L200 250 L150 400 L100 600 L-50 600 Z" fill="#D1D5DB" stroke="#9CA3AF" strokeWidth="2" />
-        <text x="50" y="300" className="text-2xl font-bold fill-gray-500 opacity-50">中國大陸</text>
+        <text x="50" y="300" className="text-2xl font-bold fill-gray-500 opacity-50">{t("map.china")}</text>
 
         {/* Taiwan */}
         <path d="M400 250 Q430 230 450 260 Q460 300 440 350 Q420 380 400 360 Q380 320 400 250 Z" fill="#10B981" stroke="#059669" strokeWidth="2" 
@@ -67,14 +69,14 @@ const BlockadeMap: React.FC = () => {
               onMouseEnter={() => setActiveFeature('energy-target')}
               onMouseLeave={() => setActiveFeature(null)}
         />
-        <text x="410" y="300" className="text-sm font-bold fill-white pointer-events-none">台灣</text>
+        <text x="410" y="300" className="text-sm font-bold fill-white pointer-events-none">{t("map.taiwan")}</text>
 
         {/* Japan/Ryukyu */}
         <path d="M550 100 L600 80 L750 20 L800 30" stroke="#CBD5E0" strokeWidth="2" fill="none"/> {/* Chain indicator */}
         <circle cx="520" cy="230" r="8" fill="#D1D5DB" stroke="#4B5563" /> {/* Yonaguni */}
-        <text x="535" y="235" className="text-xs fill-gray-600">與那國島</text>
+        <text x="535" y="235" className="text-xs fill-gray-600">{t("map.yonaguni")}</text>
         <path d="M600 150 L650 130 L700 140 L680 170 Z" fill="#D1D5DB" stroke="#9CA3AF" /> {/* Okinawaish */}
-        <text x="660" y="190" className="text-xs fill-gray-600">沖繩 (美軍基地)</text>
+        <text x="660" y="190" className="text-xs fill-gray-600">{t("map.okinawa")}</text>
 
         {/* Exclusion Zone (10-dash line approx) */}
         <path d="M350 200 L500 200 L520 400 L350 400 Z" 
@@ -103,7 +105,7 @@ const BlockadeMap: React.FC = () => {
         <circle cx="410" cy="350" r="4" fill="yellow" stroke="black" /> {/* Kaohsiung */}
         
         {/* Annotations */}
-        <text x="380" y="190" className="text-xs fill-red-500 font-bold">封鎖排他區</text>
+        <text x="380" y="190" className="text-xs fill-red-500 font-bold">{t("map.ez")}</text>
         
       </svg>
     </div>
